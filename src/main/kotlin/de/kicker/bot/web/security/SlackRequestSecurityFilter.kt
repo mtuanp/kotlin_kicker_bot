@@ -14,6 +14,7 @@ class SlackRequestSecurityFilter : OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         logger.info("SlackRequest")
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied")
     }
 
 }
