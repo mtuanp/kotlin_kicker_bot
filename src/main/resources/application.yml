@@ -1,0 +1,13 @@
+server:
+  port: 8080
+  context-path: /api
+
+spring:
+  main:
+    banner-mode: "off"
+    lazy-initialization: false
+
+logging:
+  level:
+    org:
+      springframework: ERROR
