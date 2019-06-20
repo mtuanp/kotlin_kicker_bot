@@ -26,7 +26,10 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: ./gradlew dependencies
+      - run: 
+        name: Download Dependencies
+        command: chmod +x ./gradlew
+        command: ./gradlew dependencies
 
       - save_cache:
           paths:
