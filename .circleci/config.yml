@@ -20,8 +20,8 @@ jobs:
       - checkout
 
       - restore_cache:
-        keys:
-          - gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          keys:
+            - gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
   
 
       # Download and cache dependencies
@@ -34,9 +34,9 @@ jobs:
       - run: ./gradlew dependencies
 
       - save_cache:
-        paths:
-          - ~/.gradle/wrapper/
-        key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          paths:
+            - ~/.gradle/wrapper/
+          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
 
       - save_cache:
           paths:
