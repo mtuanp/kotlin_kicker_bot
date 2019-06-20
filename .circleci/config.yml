@@ -19,10 +19,6 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
-          keys:
-            - gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -34,12 +30,7 @@ jobs:
 
       - save_cache:
           paths:
-            - ~/.gradle/wrapper/
-          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches
+            - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle.kts" }}
 
       # run tests!
