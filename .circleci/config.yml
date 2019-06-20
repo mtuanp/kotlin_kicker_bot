@@ -24,10 +24,8 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "build.gradle.kts" }}
 
-      - run: 
-          name: Download Dependencies
-          command: chmod +x ./gradlew
-          command: ./gradlew dependencies
+      - run: chmod +x ./gradlew
+      - run: ./gradlew dependencies
 
       - save_cache:
           paths:
