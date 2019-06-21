@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component
 @Component
 class SlackCommandRequestVerifier {
 
-    @Value("\${jdbc.url}")
-    private val jdbcUrl: String? = null
+    @Value("\${slack.signature.key}")
+    private lateinit var slackSignatureKey: String
 
     fun verifySlackSignature(requestBody: String, timestamp: String, versionNumber : String = "v0") : Boolean {
         return false
