@@ -37,17 +37,17 @@ class SlackCommandRequestParser {
     }
 
     private fun getFormDataKey(request: HttpServletRequest): List<String> {
-        return try {
+        try {
             when (request) {
                 is HttpServletRequestWrapper -> {
                     when(val wrapper = request.request) {
-                        is HttpServletRequestImpl -> wrapper.exchange.getAttachment(FormDataParser.FORM_DATA).toList()
+                        is HttpServletRequestImpl -> return wrapper.exchange.getAttachment(FormDataParser.FORM_DATA).toList()
                     }
                 }
             }
-            Collections.emptyList()
+            return Collections.emptyList()
         } catch (e: Exception) {
-            Collections.emptyList()
+            return Collections.emptyList()
         }
     }
 

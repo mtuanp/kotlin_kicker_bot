@@ -20,6 +20,7 @@ class SlackCommandRequestSecurityFilter constructor(val parser: SlackCommandRequ
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied")
         } else {
             logger.info("SlackRequest is valid")
+            filterChain.doFilter(request, response)
         }
     }
 }
