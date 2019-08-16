@@ -1,9 +1,11 @@
-package de.kicker.bot.web.api
+package de.kicker.bot.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import de.kicker.bot.slack.model.InteractiveMessage
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 
 internal class InteractiveMessageJsonParserTest {

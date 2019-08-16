@@ -1,11 +1,9 @@
-package de.kicker.bot.web.api
+package de.kicker.bot.slack.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import me.ramswaroop.jbot.core.slack.models.Attachment
 import me.ramswaroop.jbot.core.slack.models.Channel
-import me.ramswaroop.jbot.core.slack.models.Message
 import me.ramswaroop.jbot.core.slack.models.User
 import java.util.*
 

@@ -1,33 +1,20 @@
-package de.kicker.bot.web
+package de.kicker.bot
 
-import de.kicker.bot.web.config.KickerBotSecurityConfig
-import de.kicker.bot.web.endpoint.KickerBotSlackController
-import de.kicker.bot.web.security.SlackCommandRequestParser
-import de.kicker.bot.web.security.SlackCommandRequestSecurityFilter
-import de.kicker.bot.web.security.SlackCommandRequestVerifier
+import de.kicker.bot.endpoint.KickerBotSlackController
+import de.kicker.bot.security.SlackCommandRequestParser
+import de.kicker.bot.security.SlackCommandRequestVerifier
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.client.RestTemplateBuilder
-import org.springframework.test.context.TestPropertySource
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.context.support.AnnotationConfigContextLoader
+import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import javax.servlet.http.HttpServletRequest
+import org.springframework.web.client.RestTemplate
 
 @WebMvcTest(controllers = [KickerBotSlackController::class])
 class SlackKickerApplicationTests {
@@ -51,6 +38,11 @@ class SlackKickerApplicationTests {
 
         @Bean
         fun verifier() = spyk(SlackCommandRequestVerifier("8f742231b10e8888abcd99yyyzzz85a5"))
+
+        @Bean
+        fun restTemplate(): RestTemplate {
+            return mockk<RestTemplate>()
+        }
     }
 
     @Autowired

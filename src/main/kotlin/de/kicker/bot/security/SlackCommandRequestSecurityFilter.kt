@@ -1,8 +1,9 @@
-package de.kicker.bot.web.security
+package de.kicker.bot.security
 
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
+import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -22,5 +23,13 @@ class SlackCommandRequestSecurityFilter constructor(val parser: SlackCommandRequ
             logger.info("SlackRequest is valid")
             filterChain.doFilter(request, response)
         }
+    }
+
+    @Throws(ServletException::class)
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        if (request.servletPath == "/slack/auth/redirect") {
+            return true
+        }
+        return false
     }
 }

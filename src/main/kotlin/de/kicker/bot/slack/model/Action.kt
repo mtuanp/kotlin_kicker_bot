@@ -1,4 +1,4 @@
-package de.kicker.bot.web.api
+package de.kicker.bot.slack.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty

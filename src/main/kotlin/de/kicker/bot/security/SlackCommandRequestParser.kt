@@ -1,9 +1,8 @@
-package de.kicker.bot.web.security
+package de.kicker.bot.security
 
 import io.undertow.server.handlers.form.FormDataParser
 import io.undertow.servlet.spec.HttpServletRequestImpl
 import org.springframework.stereotype.Component
-import java.lang.Exception
 import java.net.URLEncoder
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -40,7 +39,7 @@ class SlackCommandRequestParser {
         try {
             when (request) {
                 is HttpServletRequestWrapper -> {
-                    when(val wrapper = request.request) {
+                    when (val wrapper = request.request) {
                         is HttpServletRequestImpl -> return wrapper.exchange.getAttachment(FormDataParser.FORM_DATA).toList()
                     }
                 }

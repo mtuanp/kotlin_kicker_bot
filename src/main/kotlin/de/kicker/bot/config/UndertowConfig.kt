@@ -1,4 +1,4 @@
-package de.kicker.bot.web.config
+package de.kicker.bot.config
 
 import io.undertow.server.handlers.RequestDumpingHandler
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory

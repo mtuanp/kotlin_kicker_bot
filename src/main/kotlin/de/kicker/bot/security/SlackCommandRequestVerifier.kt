@@ -1,11 +1,9 @@
-package de.kicker.bot.web.security
+package de.kicker.bot.security
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import java.nio.charset.Charset
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-
 
 
 /**
@@ -17,7 +15,7 @@ class SlackCommandRequestVerifier {
     /**
      * signature key as byte array.
      */
-    val slackSignatureKey : ByteArray
+    val slackSignatureKey: ByteArray
     private val hashAlgorithm = "HmacSHA256"
 
     constructor(@Value("\${slack.signature.key}") slackSignatureKey: String) {
@@ -37,7 +35,7 @@ class SlackCommandRequestVerifier {
     /**
      *
      */
-    private fun generateSignature(signatureContent: String) : String {
+    private fun generateSignature(signatureContent: String): String {
         val hasher = Mac.getInstance(hashAlgorithm)
         hasher.init(SecretKeySpec(slackSignatureKey, hashAlgorithm))
         val macResult = hasher.doFinal(signatureContent.toByteArray())
