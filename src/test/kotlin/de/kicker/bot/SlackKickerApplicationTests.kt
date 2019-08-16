@@ -1,8 +1,13 @@
 package de.kicker.bot
 
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
+import de.kicker.bot.api.KickerMatch
 import de.kicker.bot.endpoint.KickerBotSlackController
+import de.kicker.bot.endpoint.SlackApiEndpoints
 import de.kicker.bot.security.SlackCommandRequestParser
 import de.kicker.bot.security.SlackCommandRequestVerifier
+import de.kicker.bot.service.KickerMatchService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
@@ -41,7 +46,22 @@ class SlackKickerApplicationTests {
 
         @Bean
         fun restTemplate(): RestTemplate {
-            return mockk<RestTemplate>()
+            return mockk()
+        }
+
+        @Bean
+        fun kickerMathService(): KickerMatchService {
+            return mockk()
+        }
+
+        @Bean
+        fun cache(): Cache<String, KickerMatch> {
+            return CacheBuilder.newBuilder().maximumSize(10).build()
+        }
+
+        @Bean
+        fun endpoints(): SlackApiEndpoints {
+            return mockk()
         }
     }
 
