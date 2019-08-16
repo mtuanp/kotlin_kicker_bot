@@ -13,10 +13,4 @@ class SlackApiConfig {
         return RestTemplate()
     }
 
-    /* default token store. Use it if nothing else in app context */
-    @Bean
-    fun tokenStore(): TokenStore {
-        return InMemoryTokenStore()
-    }
-
 }
