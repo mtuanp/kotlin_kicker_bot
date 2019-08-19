@@ -1,0 +1,5 @@
+{
+  "TeamA": "TokenA",
+  "TeamB": "TokenB",
+  "TeamC": "TokenC"
+}

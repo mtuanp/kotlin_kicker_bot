@@ -18,7 +18,7 @@ class SlackCommandRequestVerifier {
     val slackSignatureKey: ByteArray
     private val hashAlgorithm = "HmacSHA256"
 
-    constructor(@Value("\${slack.signature.key}") slackSignatureKey: String) {
+    constructor(@Value("\${slackSignatureKey}") slackSignatureKey: String) {
         this.slackSignatureKey = slackSignatureKey.toByteArray()
     }
 
