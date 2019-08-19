@@ -6,10 +6,7 @@ import de.kicker.bot.api.KickerMatch
 import de.kicker.bot.endpoint.KickerBotSlackController
 import de.kicker.bot.security.SlackCommandRequestParser
 import de.kicker.bot.security.SlackCommandRequestVerifier
-import de.kicker.bot.service.KickerMatchService
-import de.kicker.bot.service.SlackApiEndpoints
-import de.kicker.bot.service.SlackMessageService
-import de.kicker.bot.service.SlackTokenService
+import de.kicker.bot.service.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
@@ -48,12 +45,12 @@ class SlackKickerApplicationTests {
 
         @Bean
         fun restTemplate(): RestTemplate {
-            return mockk()
+            return mockk(relaxed = true)
         }
 
         @Bean
         fun kickerMathService(): KickerMatchService {
-            return mockk()
+            return mockk(relaxed = true)
         }
 
         @Bean
@@ -63,17 +60,27 @@ class SlackKickerApplicationTests {
 
         @Bean
         fun endpoints(): SlackApiEndpoints {
-            return mockk()
+            return mockk(relaxed = true)
         }
 
         @Bean
         fun slackMessageService(): SlackMessageService {
-            return mockk()
+            return mockk(relaxed = true)
         }
 
         @Bean
         fun slackTokenService(): SlackTokenService {
-            return mockk()
+            return mockk(relaxed = true)
+        }
+
+        @Bean
+        fun slackTokenFileStorage(): SlackTokenFileStorage {
+            return mockk(relaxed = true)
+        }
+
+        @Bean
+        fun encryptionService(): EncryptionService {
+            return mockk(relaxed = true)
         }
     }
 
