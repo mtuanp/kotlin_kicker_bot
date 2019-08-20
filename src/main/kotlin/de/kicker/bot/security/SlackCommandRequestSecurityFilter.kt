@@ -27,7 +27,7 @@ class SlackCommandRequestSecurityFilter constructor(val parser: SlackCommandRequ
 
     @Throws(ServletException::class)
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-        if (request.servletPath == "/slack/auth/redirect") {
+        if ((!request.requestURI.startsWith("/slack/")) || request.requestURI == "/slack/auth/redirect") {
             return true
         }
         return false
