@@ -18,11 +18,12 @@ class EncryptionService {
     private val hashAlgorithm = "SHA-256"
     private val aes = "AES"
     private val cipherTransformation = "AES/CBC/PKCS5Padding"
+    private val saltLength = 8
 
     @Throws(Exception::class)
     fun encrypt(text: String, password: String): String {
         val pass = password.toByteArray(US_ASCII)
-        val salt = SecureRandom().generateSeed(8)
+        val salt = SecureRandom().generateSeed(saltLength)
         val inBytes = text.toByteArray(UTF_8)
 
         val passAndSalt = pass + salt
@@ -37,8 +38,8 @@ class EncryptionService {
             i++
         }
 
-        val keyValue = Arrays.copyOfRange(keyAndIv, 0, 32)
-        val iv = Arrays.copyOfRange(keyAndIv, 32, 48)
+        val keyValue = keyAndIv.copyOfRange(0, 32)
+        val iv = keyAndIv.copyOfRange(32, 48)
         val key = SecretKeySpec(keyValue, aes)
 
         val cipher = Cipher.getInstance(cipherTransformation)
@@ -60,12 +61,12 @@ class EncryptionService {
 
         val inBytes = Base64.getDecoder().decode(encrypted)
 
-        val shouldBeMagic = Arrays.copyOfRange(inBytes, 0, saltedMagicByteArray.size)
-        if (!Arrays.equals(shouldBeMagic, saltedMagicByteArray)) {
-            throw IllegalArgumentException("Initial bytes from input do not match OpenSSL SALTED_MAGIC salt value.")
+        val shouldBeMagic = inBytes.copyOfRange(0, saltedMagicByteArray.size)
+        if (!shouldBeMagic.contentEquals(saltedMagicByteArray)) {
+            throw IllegalArgumentException("Initial bytes from input do not match SALTED_MAGIC salt value.")
         }
 
-        val salt = Arrays.copyOfRange(inBytes, saltedMagicByteArray.size, saltedMagicByteArray.size + 8)
+        val salt = inBytes.copyOfRange(saltedMagicByteArray.size, saltedMagicByteArray.size + saltLength)
 
         val passAndSalt = pass + salt
 
@@ -80,10 +81,10 @@ class EncryptionService {
             i++
         }
 
-        val keyValue = Arrays.copyOfRange(keyAndIv, 0, 32)
+        val keyValue = keyAndIv.copyOfRange(0, 32)
         val key = SecretKeySpec(keyValue, aes)
 
-        val iv = Arrays.copyOfRange(keyAndIv, 32, 48)
+        val iv = keyAndIv.copyOfRange(32, 48)
 
         val cipher = Cipher.getInstance(cipherTransformation)
         cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(iv))

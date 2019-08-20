@@ -1,8 +1,7 @@
 package de.kicker.bot.service
 
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 internal class EncryptionServiceTest {
 
@@ -17,6 +16,14 @@ internal class EncryptionServiceTest {
         assertNotEquals(encryptedText, encryptedText2)
         val decryptedText = encyptService.decrypt(encryptedText, password)
         assertEquals(testString, decryptedText)
+    }
+
+    @Test
+    fun decryptTestFailed() {
+        val testString = "daswtw9jrdajoaakma"
+        val password = "BS5RuNDZqaq3JUTMaH8gLMmculS0NHLK"
+        val encyptService = EncryptionService()
+        assertThrows(IllegalArgumentException::class.java) { encyptService.decrypt(testString, password) }
     }
 
 }
