@@ -95,7 +95,7 @@ class SlackKickerApplicationTests {
 
     @Test
     fun testingCorrectSlackCommandRequestShouldWork() {
-        val kickerGameSlackRequest = MockMvcRequestBuilders.post("/kickergame")
+        val kickerGameSlackRequest = MockMvcRequestBuilders.post("/slack/kickergame")
                 .header("x-slack-request-timestamp", timestamp)
                 .header("x-slack-signature", signature)
                 .contentType("application/x-www-form-urlencoded")
