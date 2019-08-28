@@ -28,3 +28,5 @@ hs_err_pid*
 /.idea
 
 /src/main/resources/application-dev.yml
+
+.kickerbot.env
