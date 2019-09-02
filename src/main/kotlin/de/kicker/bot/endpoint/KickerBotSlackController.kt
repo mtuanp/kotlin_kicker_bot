@@ -55,8 +55,9 @@ class KickerBotSlackController {
                 }
             }
             return encodedMessage
+        } else {
+            return slackMessageService.prepareMatchTimeoutMessage()
         }
-        return null
     }
 
     @GetMapping("/slack/auth/redirect")

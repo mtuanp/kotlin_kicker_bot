@@ -1,6 +1,9 @@
 package de.kicker.bot.service
 
-import de.kicker.bot.slack.model.*
+import de.kicker.bot.slack.model.AccessTokenResponse
+import de.kicker.bot.slack.model.Action
+import de.kicker.bot.slack.model.ActionableAttachment
+import de.kicker.bot.slack.model.InteractiveMessage
 import me.ramswaroop.jbot.core.slack.models.Attachment
 import me.ramswaroop.jbot.core.slack.models.RichMessage
 import org.slf4j.Logger
@@ -83,6 +86,21 @@ class SlackMessageService {
         // Always remember to send the encoded message to Slack
         val encodedMessage = richMessage.encodedMessage()
         return encodedMessage
+    }
+
+    fun prepareMatchTimeoutMessage(): RichMessage? {
+        val richMessage = RichMessage().apply {
+            responseType = "in_channel"
+            attachments = arrayOf(
+                    Attachment().apply {
+                        text = ":no_entry: Kicker match is no longer available, please start a new one with /kicker. :no_entry:"
+                        color = "#FF1919"
+                        thumbUrl = "thumb_url"
+                    }
+            )
+        }
+
+        return richMessage
     }
 
     fun postUserGoMessageNotification(teamId: String, playerId: String, actualPlayersAsString: String) {
