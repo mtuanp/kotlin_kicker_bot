@@ -1,9 +1,7 @@
 package de.kicker.bot.service
 
-import de.kicker.bot.slack.model.AccessTokenResponse
-import de.kicker.bot.slack.model.Action
-import de.kicker.bot.slack.model.ActionableAttachment
-import de.kicker.bot.slack.model.InteractiveMessage
+import de.kicker.bot.slack.model.*
+import me.ramswaroop.jbot.core.slack.models.Attachment
 import me.ramswaroop.jbot.core.slack.models.RichMessage
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -93,11 +91,14 @@ class SlackMessageService {
         val token = slackTokenService.getToken(teamId)
         headers.setBearerAuth(token)
         val postMessage = RichMessage().apply {
-            text = "Go go go! Meet ${actualPlayersAsString} by the kicker."
+            attachments = arrayOf(Attachment().apply {
+                text = "Go go go! Meet ${actualPlayersAsString} by the kicker."
+                color = "#7CD197"
+            })
             channel = playerId
         }
         try {
-            val request = HttpEntity(postMessage.encodedMessage(), headers)
+            val request = HttpEntity(postMessage, headers)
             restTemplate.postForEntity(slackApiEndpoints.chat().postMessage(), request, String::class.java)
         } catch (e: RestClientException) {
             logger.error("couldn't send message to slack", e)

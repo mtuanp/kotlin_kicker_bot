@@ -48,8 +48,10 @@ class KickerBotSlackController {
             val actualPlayersAsString = kickerMatchService.listMatchPlayers(uuid).joinToString { "<@${it}>" }
             val encodedMessage = slackMessageService.prepareAddPlayerMessage(interactiveMessage, actualPlayersAsString, matchIsReady)
             if (matchIsReady) {
-                actualPlayers.parallelStream().forEach { playerId ->
-                    slackMessageService.postUserGoMessageNotification(interactiveMessage.team.get().id, playerId, actualPlayersAsString)
+                CompletableFuture.runAsync {
+                    actualPlayers.parallelStream().forEach { playerId ->
+                        slackMessageService.postUserGoMessageNotification(interactiveMessage.team.get().id, playerId, actualPlayersAsString)
+                    }
                 }
             }
             return encodedMessage
