@@ -1,7 +1,7 @@
 FROM openjdk:8-jdk-alpine as builder
 COPY . /app/src
 WORKDIR /app/src
-RUN ./gradlew --no-daemon build
+RUN ./gradlew --no-daemon build -x test
 
 FROM openjdk:8-jdk-alpine
 COPY --from=builder /app/src/build/libs/slack-kicker-app-*.jar /app/slack-kicker-app.jar

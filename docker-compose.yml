@@ -8,29 +8,18 @@ services:
       - .kickerbot.env
     volumes:
       - tokendata:/app_data
-    ports:
-      - 8080:8080
     build:
       dockerfile: Dockerfile
       context: .
-    restart: unless-stopped
-  serveo:
-    container_name: slack-kicker-bot-serveo
-    image: taichunmin/serveo:latest
-    tty: true
-    stdin_open: true
-     # see https://serveo.net/ for more options
+  proxy:
+    container_name: slack-kicker-bot-proxy
+    image: autossh:latest
     env_file:
       - .kickerbot.env
-    command: >
-      autossh -M 0
-      -o ServerAliveInterval=60
-      -o ServerAliveCountMax=3
-      -o ExitOnForwardFailure=yes
-      -o StrictHostKeyChecking=no
-      -R 443:kickerbot:8080
-      serveo.net
-    restart: unless-stopped
+    volumes:
+      - ${SSH_KEY}:/id_rsa
+      - ${KNOWN_HOST}:/known_hosts
+    restart: always
 
 volumes:
   tokendata:
