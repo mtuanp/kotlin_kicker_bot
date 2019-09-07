@@ -42,7 +42,7 @@ class KickerBotSlackController {
         val interactiveMessage = objectMapper.readValue(payload, InteractiveMessage::class.java)
         val uuid = interactiveMessage.actions.first().value
         val addSuccess = kickerMatchService.addPlayerToMatch(uuid, interactiveMessage.team.get().id, interactiveMessage.user.get().id)
-        if (addSuccess) {
+        if (addSuccess.first && addSuccess.second && addSuccess.third) {
             val matchIsReady = kickerMatchService.matchIsReady(uuid)
             val actualPlayers = kickerMatchService.listMatchPlayers(uuid)
             val actualPlayersAsString = kickerMatchService.listMatchPlayers(uuid).joinToString { "<@${it}>" }
@@ -55,9 +55,10 @@ class KickerBotSlackController {
                 }
             }
             return encodedMessage
-        } else {
+        } else if (!addSuccess.first) {
             return slackMessageService.prepareMatchTimeoutMessage()
         }
+        return null
     }
 
     @GetMapping("/slack/auth/redirect")

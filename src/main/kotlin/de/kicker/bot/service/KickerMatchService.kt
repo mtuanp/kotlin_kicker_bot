@@ -28,12 +28,13 @@ class KickerMatchService {
     /**
      * Function for adding player to a match with given uuid. It also check for the correct team id.
      */
-    fun addPlayerToMatch(uuid: String, teamId: String, userId: String): Boolean {
-        val kickerMatch = kickerMatchCache.getIfPresent(uuid)
-        if (kickerMatch?.teamId == teamId) {
-            return kickerMatch.addPlayer(userId)
+    fun addPlayerToMatch(uuid: String, teamId: String, userId: String): Triple<Boolean, Boolean, Boolean> {
+        val kickerMatch = kickerMatchCache.getIfPresent(uuid) ?: return Triple(first = false, second = false, third = false)
+        return if (kickerMatch.teamId == teamId) {
+            Triple(first = true, second = true, third = kickerMatch.addPlayer(userId))
+        } else {
+            Triple(first = true, second = false, third = false)
         }
-        return false
     }
 
     /**
