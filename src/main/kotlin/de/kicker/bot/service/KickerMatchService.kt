@@ -1,6 +1,7 @@
 package de.kicker.bot.service
 
 import com.google.common.cache.Cache
+import de.kicker.bot.api.ErrorCode
 import de.kicker.bot.api.KickerMatch
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -28,13 +29,14 @@ class KickerMatchService {
     /**
      * Function for adding player to a match with given uuid. It also check for the correct team id.
      */
-    fun addPlayerToMatch(uuid: String, teamId: String, userId: String): Triple<Boolean, Boolean, Boolean> {
-        val kickerMatch = kickerMatchCache.getIfPresent(uuid) ?: return Triple(first = false, second = false, third = false)
-        return if (kickerMatch.teamId == teamId) {
-            Triple(first = true, second = true, third = kickerMatch.addPlayer(userId))
-        } else {
-            Triple(first = true, second = false, third = false)
-        }
+    fun addPlayerToMatch(uuid: String, teamId: String, userId: String): Pair<Boolean, ErrorCode> {
+//        val kickerMatch = kickerMatchCache.getIfPresent(uuid) ?: return Triple(first = false, second = false, third = false)
+//        return if (kickerMatch.teamId == teamId) {
+//            Triple(first = true, second = true, third = kickerMatch.addPlayer(userId))
+//        } else {
+//            Triple(first = true, second = false, third = false)
+//        }
+        return Pair(true, ErrorCode.NOTHING)
     }
 
     /**
