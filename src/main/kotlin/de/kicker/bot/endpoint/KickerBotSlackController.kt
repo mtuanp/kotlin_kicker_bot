@@ -42,22 +42,22 @@ class KickerBotSlackController {
         val interactiveMessage = objectMapper.readValue(payload, InteractiveMessage::class.java)
         val uuid = interactiveMessage.actions.first().value
         val addSuccess = kickerMatchService.addPlayerToMatch(uuid, interactiveMessage.team.get().id, interactiveMessage.user.get().id)
-        if (addSuccess.first && addSuccess.second && addSuccess.third) {
-            val matchIsReady = kickerMatchService.matchIsReady(uuid)
-            val actualPlayers = kickerMatchService.listMatchPlayers(uuid)
-            val actualPlayersAsString = kickerMatchService.listMatchPlayers(uuid).joinToString { "<@${it}>" }
-            val encodedMessage = slackMessageService.prepareAddPlayerMessage(interactiveMessage, actualPlayersAsString, matchIsReady)
-            if (matchIsReady) {
-                CompletableFuture.runAsync {
-                    actualPlayers.parallelStream().forEach { playerId ->
-                        slackMessageService.postUserGoMessageNotification(interactiveMessage.team.get().id, playerId, actualPlayersAsString)
-                    }
-                }
-            }
-            return encodedMessage
-        } else if (!addSuccess.first) {
-            return slackMessageService.prepareMatchTimeoutMessage()
-        }
+//        if (addSuccess.first && addSuccess.second && addSuccess.third) {
+//            val matchIsReady = kickerMatchService.matchIsReady(uuid)
+//            val actualPlayers = kickerMatchService.listMatchPlayers(uuid)
+//            val actualPlayersAsString = kickerMatchService.listMatchPlayers(uuid).joinToString { "<@${it}>" }
+//            val encodedMessage = slackMessageService.prepareAddPlayerMessage(interactiveMessage, actualPlayersAsString, matchIsReady)
+//            if (matchIsReady) {
+//                CompletableFuture.runAsync {
+//                    actualPlayers.parallelStream().forEach { playerId ->
+//                        slackMessageService.postUserGoMessageNotification(interactiveMessage.team.get().id, playerId, actualPlayersAsString)
+//                    }
+//                }
+//            }
+//            return encodedMessage
+//        } else if (!addSuccess.first) {
+//            return slackMessageService.prepareMatchTimeoutMessage()
+//        }
         return null
     }
 
