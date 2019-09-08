@@ -49,6 +49,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.5.1")
     testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("org.assertj:assertj-core:3.13.2")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.1")
     testRuntimeOnly("org.junit.platform:junit-platform-engine:1.5.1")
@@ -64,10 +65,6 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "1.8"
     }
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "1.8"
 }
 
 jacoco {

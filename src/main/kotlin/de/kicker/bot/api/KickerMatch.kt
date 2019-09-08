@@ -4,17 +4,20 @@ import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 data class KickerMatch(val teamId: String, private val players: Queue<String> = ConcurrentLinkedQueue()) {
-    internal val MAX_PLAYERS = 4
+    private val maxPlayers = 4
 
-    fun addPlayer(playerId: String): Pair<Boolean, ErrorCode> {
-        if (players.size == MAX_PLAYERS) {
-            return Pair(false, ErrorCode.MATCH_HAS_MAX_PLAYER)
+    fun addPlayer(playerId: String): Result {
+        if (players.size == maxPlayers) {
+            return Result.error(ErrorCode.MATCH_MAX_PLAYERS_REACHED)
         }
         if (players.contains(playerId)) {
-            return Pair(false, ErrorCode.MATCH_CONTAINS_PLAYER)
+            return Result.error(ErrorCode.MATCH_CONTAINS_PLAYER)
         }
-        val result = players.add(playerId)
-        return Pair(result, if (result) ErrorCode.NOTHING else ErrorCode.MATCH_ADD_NOT_POSSIBLE)
+        return Result.of(players.add(playerId), ErrorCode.MATCH_ADD_NOT_POSSIBLE)
+    }
+
+    fun removePlayer(playerId: String): Result {
+        return Result.of(players.remove(playerId), ErrorCode.MATCH_DID_NOT_CONTAINS_PLAYER)
     }
 
     fun listPlayers(): Collection<String> {
@@ -26,7 +29,7 @@ data class KickerMatch(val teamId: String, private val players: Queue<String> = 
     }
 
     fun matchIsReady(): Boolean {
-        return players.size == MAX_PLAYERS
+        return players.size == maxPlayers
     }
 
 }
