@@ -3,6 +3,7 @@ package de.kicker.bot.service
 import com.google.common.cache.Cache
 import de.kicker.bot.api.ErrorCode
 import de.kicker.bot.api.KickerMatch
+import de.kicker.bot.api.Result
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -29,14 +30,25 @@ class KickerMatchService {
     /**
      * Function for adding player to a match with given uuid. It also check for the correct team id.
      */
-    fun addPlayerToMatch(uuid: String, teamId: String, userId: String): Pair<Boolean, ErrorCode> {
-//        val kickerMatch = kickerMatchCache.getIfPresent(uuid) ?: return Triple(first = false, second = false, third = false)
-//        return if (kickerMatch.teamId == teamId) {
-//            Triple(first = true, second = true, third = kickerMatch.addPlayer(userId))
-//        } else {
-//            Triple(first = true, second = false, third = false)
-//        }
-        return Pair(true, ErrorCode.NOTHING)
+    fun addPlayerToMatch(uuid: String, teamId: String, userId: String): Result {
+        val kickerMatch = kickerMatchCache.getIfPresent(uuid) ?: return Result.error(ErrorCode.MATCH_NOT_FOUND)
+        return if (kickerMatch.teamId == teamId) {
+            kickerMatch.addPlayer(userId)
+        } else {
+            Result.error(ErrorCode.TEAM_ID_MISMATCHED)
+        }
+    }
+
+    /**
+     * Function for removing player from a match with given uuid. It also check for the correct team id.
+     */
+    fun removePlayerFromMatch(uuid: String, teamId: String, userId: String): Result {
+        val kickerMatch = kickerMatchCache.getIfPresent(uuid) ?: return Result.error(ErrorCode.MATCH_NOT_FOUND)
+        return if (kickerMatch.teamId == teamId) {
+            kickerMatch.removePlayer(userId)
+        } else {
+            Result.error(ErrorCode.TEAM_ID_MISMATCHED)
+        }
     }
 
     /**

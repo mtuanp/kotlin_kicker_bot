@@ -84,8 +84,7 @@ class SlackMessageService {
         }
 
         // Always remember to send the encoded message to Slack
-        val encodedMessage = richMessage.encodedMessage()
-        return encodedMessage
+        return richMessage.encodedMessage()
     }
 
     fun prepareMatchTimeoutMessage(): RichMessage? {
