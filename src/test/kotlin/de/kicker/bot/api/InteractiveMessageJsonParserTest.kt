@@ -53,12 +53,12 @@ internal class InteractiveMessageJsonParserTest {
         assertTrue(iteractiveMessage.callbackId.isNotEmpty())
         assertTrue(iteractiveMessage.messageTs.isNotEmpty())
         assertTrue(iteractiveMessage.type.isNotEmpty())
-        assertTrue(iteractiveMessage.team.isPresent())
-        assertTrue(iteractiveMessage.channel.isPresent())
-        assertTrue(iteractiveMessage.user.isPresent())
+        assertNotNull(iteractiveMessage.team)
+        assertNotNull(iteractiveMessage.channel)
+        assertNotNull(iteractiveMessage.user)
         assertTrue(iteractiveMessage.token.isNotEmpty())
-        assertTrue(iteractiveMessage.original_message.isPresent())
-        assertTrue(iteractiveMessage.response_url.isNotEmpty())
+        assertNotNull(iteractiveMessage.originalMessage)
+        assertTrue(iteractiveMessage.responseUrl.isNotEmpty())
         assertTrue(iteractiveMessage.triggerId.isNotEmpty())
     }
 }
