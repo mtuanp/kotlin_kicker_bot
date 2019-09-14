@@ -11,6 +11,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
+    restart: always
   proxy:
     container_name: slack-kicker-bot-proxy
     image: autossh:latest

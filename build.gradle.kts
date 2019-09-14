@@ -21,6 +21,9 @@ repositories {
 
 
 dependencies {
+    val junitVersion = "5.5.1"
+    val junitPlatformVersion = "1.5.1"
+
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
     }
@@ -45,15 +48,15 @@ dependencies {
         exclude(module= "org.assertj")
         exclude(module= "org.hamcrest")
     }
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.5.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("io.mockk:mockk:1.9.3")
     testImplementation("org.assertj:assertj-core:3.13.2")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-engine:1.5.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-commons:1.5.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-engine:$junitPlatformVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-commons:$junitPlatformVersion")
 }
 
 tasks.test {
