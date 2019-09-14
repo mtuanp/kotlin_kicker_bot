@@ -3,8 +3,12 @@ package de.kicker.bot.api
 data class Result(val success: Boolean, val errorCode: ErrorCode) {
 
     companion object {
-        fun of(success: Boolean, defaultErrorCode: ErrorCode) = when (success) {
-            true -> Result(success, ErrorCode.NOTHING)
+        fun success(): Result {
+            return Result(true, ErrorCode.NOTHING)
+        }
+
+        fun of(success: Boolean, defaultErrorCode: ErrorCode): Result = when (success) {
+            true -> success()
             false -> Result(success, defaultErrorCode)
         }
 

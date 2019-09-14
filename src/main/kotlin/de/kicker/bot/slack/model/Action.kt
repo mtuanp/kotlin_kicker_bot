@@ -10,7 +10,7 @@ class Action {
     var type: String = ""
     var id: Int = 0
     var value: String = ""
-    var confirm: String = ""
+    var confirm: ConfirmDialog? = null
     var style: String = ""
     var options: Array<Option> = arrayOf()
     @JsonProperty("option_groups")

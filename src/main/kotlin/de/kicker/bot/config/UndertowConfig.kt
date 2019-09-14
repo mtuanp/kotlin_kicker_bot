@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile
 class UndertowConfig {
 
     @Bean
-    @Profile("dev")
+    @Profile("logging")
     fun undertowServletWebServerFactory(): UndertowServletWebServerFactory {
         val factory = UndertowServletWebServerFactory()
         factory.addDeploymentInfoCustomizers(org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer { deploymentInfo -> deploymentInfo.addInitialHandlerChainWrapper { handler -> RequestDumpingHandler(handler) } })

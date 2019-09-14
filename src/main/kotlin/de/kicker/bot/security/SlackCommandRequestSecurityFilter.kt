@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse
 class SlackCommandRequestSecurityFilter constructor(val parser: SlackCommandRequestParser, val verifier: SlackCommandRequestVerifier) : OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-        logger.info("Check SlackRequest")
+        logger.debug("Check SlackRequest")
         val timestamp = parser.getTimestamp(request)
         val slackSignature = parser.getSignature(request)
         val formBody = parser.getFormBody(request)
@@ -20,7 +20,7 @@ class SlackCommandRequestSecurityFilter constructor(val parser: SlackCommandRequ
             logger.info("SlackRequest is not valid")
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied")
         } else {
-            logger.info("SlackRequest is valid")
+            logger.debug("SlackRequest is valid")
             filterChain.doFilter(request, response)
         }
     }

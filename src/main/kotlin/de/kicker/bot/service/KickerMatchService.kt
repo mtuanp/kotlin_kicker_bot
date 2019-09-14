@@ -52,6 +52,23 @@ class KickerMatchService {
     }
 
     /**
+     * Cancel the match. Remove it from the cache.
+     */
+    fun cancelMatch(uuid: String, teamId: String, userId: String): Result {
+        val kickerMatch = kickerMatchCache.getIfPresent(uuid) ?: return Result.error(ErrorCode.MATCH_NOT_FOUND)
+        return if (kickerMatch.teamId == teamId) {
+            if( kickerMatch.hasPlayer(userId)) {
+                kickerMatchCache.invalidate(uuid)
+                Result.success()
+            } else {
+                Result.error(ErrorCode.MATCH_DID_NOT_CONTAINS_PLAYER)
+            }
+        } else {
+            Result.error(ErrorCode.TEAM_ID_MISMATCHED)
+        }
+    }
+
+    /**
      * List all players of the kicker match as collection.
      */
     fun listMatchPlayers(uuid: String): Collection<String> {

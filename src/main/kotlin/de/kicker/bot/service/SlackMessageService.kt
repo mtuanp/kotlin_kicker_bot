@@ -1,9 +1,7 @@
 package de.kicker.bot.service
 
-import de.kicker.bot.slack.model.AccessTokenResponse
-import de.kicker.bot.slack.model.Action
-import de.kicker.bot.slack.model.ActionableAttachment
-import de.kicker.bot.slack.model.InteractiveMessage
+import de.kicker.bot.api.MatchInteraction.*
+import de.kicker.bot.slack.model.*
 import me.ramswaroop.jbot.core.slack.models.Attachment
 import me.ramswaroop.jbot.core.slack.models.RichMessage
 import org.slf4j.Logger
@@ -33,62 +31,77 @@ class SlackMessageService {
     lateinit var slackTokenService: SlackTokenService
 
     fun postInitialMessageToChannel(uuid: String, players: Collection<String>, responseUrl: String) {
-        val richMessage = RichMessage("Hello, it's time for a Kicker match ⚽").apply {
+        val richMessage = RichMessage().apply {
             responseType = "in_channel"
-            attachments = arrayOf(ActionableAttachment().apply {
+            attachments = arrayOf(Attachment().apply {
+                text = "<!here> Hello, it's time for a Kicker match :soccer:"
+                color = "#fbf4dd"
+            }, Attachment().apply {
                 text = "Actual players: ${players.joinToString { "<@${it}>" }}"
                 color = "#7CD197"
             }, ActionableAttachment().apply {
                 title = "Would you like to join?"
                 fallback = "You are unable to join the game"
-                callbackId = "join_game"
+                callbackId = uuid
                 color = "#3AA3E3"
                 actions = arrayOf(Action().apply {
                     name = "plus"
-                    text = "+"
+                    text = ":heavy_plus_sign:"
                     type = "button"
-                    value = uuid
+                    value = JOIN_MATCH.toString()
+                    style = "primary"
+                }, Action().apply {
+                    name = "minus"
+                    text = ":heavy_minus_sign:"
+                    type = "button"
+                    value = LEAVE_MATCH.toString()
+                }, Action().apply {
+                    name = "cancel"
+                    text = ":x:"
+                    type = "button"
+                    value = CANCEL_MATCH.toString()
+                    style = "danger"
+                    confirm = ConfirmDialog().apply {
+                        title = "Are you sure?"
+                        text = "Do you really want to close the kicker match?"
+                        okText = "Yes"
+                        dismissText = "No"
+                    }
                 })
             })
         }
-        // Always remember to send the encoded message to Slack
-        val encodedMessage = richMessage.encodedMessage()
         try {
-            restTemplate.postForEntity(responseUrl, encodedMessage, String::class.java)
+            restTemplate.postForEntity(responseUrl, richMessage, String::class.java)
         } catch (e: RestClientException) {
             logger.error("couldn't send message to slack", e)
         }
     }
 
-    fun prepareAddPlayerMessage(interactiveMessage: InteractiveMessage, actualPlayersAsString: String, matchIsReady: Boolean): RichMessage? {
-        val richMessage = RichMessage(interactiveMessage.original_message.get().text).apply {
+    fun createAddPlayerMessage(originMessage: OriginMessage, actualPlayersAsString: String, matchIsReady: Boolean): RichMessage? {
+        return RichMessage().apply {
             responseType = "in_channel"
-            attachments = arrayOf(
-                    ActionableAttachment().apply {
-                        text = "Actual players: ${actualPlayersAsString}"
-                        color = "#7CD197"
-                    },
-                    when {
-                        matchIsReady -> {
-                            ActionableAttachment().apply {
-                                text = "All Players get ready for the match!"
-                                color = "#FFFF66"
-                            }
-                        }
-                        else -> {
-                            interactiveMessage.original_message.get().attachments[1]
-                        }
+            attachments = arrayOf(Attachment().apply {
+                text = "<!here> Hello, it's time for a Kicker match :soccer:"
+                color = "#fbf4dd"
+            }, Attachment().apply {
+                text = "Actual players: $actualPlayersAsString"
+                color = "#7CD197"
+            }, when {
+                matchIsReady -> {
+                    Attachment().apply {
+                        text = "All Players get ready for the match!"
+                        color = "#FFFF66"
                     }
-
-            )
+                }
+                else -> {
+                    originMessage.attachments[2]
+                }
+            })
         }
-
-        // Always remember to send the encoded message to Slack
-        return richMessage.encodedMessage()
     }
 
-    fun prepareMatchTimeoutMessage(): RichMessage? {
-        val richMessage = RichMessage().apply {
+    fun createMatchTimeoutMessage(): RichMessage? {
+        return RichMessage().apply {
             responseType = "in_channel"
             attachments = arrayOf(
                     Attachment().apply {
@@ -98,8 +111,19 @@ class SlackMessageService {
                     }
             )
         }
+    }
 
-        return richMessage
+    fun createMatchCanceledMessage(): RichMessage? {
+        return RichMessage().apply {
+            responseType = "in_channel"
+            attachments = arrayOf(
+                    Attachment().apply {
+                        text = ":no_entry: Kicker match has been canceled by user. :no_entry:"
+                        color = "#FF1919"
+                        thumbUrl = "thumb_url"
+                    }
+            )
+        }
     }
 
     fun postUserGoMessageNotification(teamId: String, playerId: String, actualPlayersAsString: String) {
@@ -109,7 +133,7 @@ class SlackMessageService {
         headers.setBearerAuth(token)
         val postMessage = RichMessage().apply {
             attachments = arrayOf(Attachment().apply {
-                text = "Go go go! Meet ${actualPlayersAsString} by the kicker."
+                text = "Go go go! Meet $actualPlayersAsString at the kicker."
                 color = "#7CD197"
             })
             channel = playerId
