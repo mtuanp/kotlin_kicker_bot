@@ -34,7 +34,7 @@ class KickerBotSlackController {
     @PostMapping("/slack/kickergame", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun startKickerGame(@ModelAttribute slackCommandRequest: SlackCommandRequest): String {
         CompletableFuture.runAsync {
-            kickerBotSlackService.startKickerGame(slackCommandRequest.team_id, slackCommandRequest.user_id, slackCommandRequest.response_url)
+            kickerBotSlackService.startKickerGame(slackCommandRequest.team_id, slackCommandRequest.user_id, slackCommandRequest.text, slackCommandRequest.response_url)
             logger.debug("Game created")
         }
         return ""

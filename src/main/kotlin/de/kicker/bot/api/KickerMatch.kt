@@ -4,10 +4,13 @@ import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 data class KickerMatch(val teamId: String, private val players: Queue<String> = ConcurrentLinkedQueue()) {
-    private val maxPlayers = 4
+
+    companion object {
+        const val maxPlayers = 4
+    }
 
     fun addPlayer(playerId: String): Result {
-        if (players.size == maxPlayers) {
+        if (players.size == Companion.maxPlayers) {
             return Result.error(ErrorCode.MATCH_MAX_PLAYERS_REACHED)
         }
         if (players.contains(playerId)) {

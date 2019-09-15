@@ -15,7 +15,7 @@ class KickerConfig {
     val logger: Logger = LoggerFactory.getLogger(KickerConfig::class.java)
 
     @Bean
-    @Profile("!dev")
+    @Profile("prod")
     fun kickerMatchCacheProd(): Cache<String, KickerMatch> {
         logger.info("load production cache settings")
         return CacheBuilder.newBuilder()

@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class SlackMessageService {
-    val logger: Logger = LoggerFactory.getLogger(SlackMessageService::class.java)
+    internal var logger: Logger = LoggerFactory.getLogger(SlackMessageService::class.java)
 
     @Autowired
     lateinit var restTemplate: RestTemplate
@@ -30,45 +30,56 @@ class SlackMessageService {
     @Autowired
     lateinit var slackTokenService: SlackTokenService
 
-    fun postInitialMessageToChannel(uuid: String, players: Collection<String>, responseUrl: String) {
+    private fun helloAttachment() = Attachment().apply {
+        text = "<!here> Hello, it's time for a Kicker match :soccer:"
+        color = "#fbf4dd"
+    }
+
+    private fun actualPlayersAttachment(actualPlayersAsString: String) = Attachment().apply {
+        text = "Actual players: $actualPlayersAsString"
+        color = "#7CD197"
+    }
+
+    private fun interactionButtonAttachment(uuid: String) = ActionableAttachment().apply {
+        title = "Would you like to join?"
+        fallback = "You are unable to join the game"
+        callbackId = uuid
+        color = "#3AA3E3"
+        actions = arrayOf(Action().apply {
+            name = "plus"
+            text = ":heavy_plus_sign:"
+            type = "button"
+            value = JOIN_MATCH.toString()
+            style = "primary"
+        }, Action().apply {
+            name = "minus"
+            text = ":heavy_minus_sign:"
+            type = "button"
+            value = LEAVE_MATCH.toString()
+        }, Action().apply {
+            name = "cancel"
+            text = ":x:"
+            type = "button"
+            value = CANCEL_MATCH.toString()
+            style = "danger"
+            confirm = ConfirmDialog().apply {
+                title = "Are you sure?"
+                text = "Do you really want to close the kicker match?"
+                okText = "Yes"
+                dismissText = "No"
+            }
+        })
+    }
+
+    private fun matchIsReadyAttachment() = Attachment().apply {
+        text = "All Players get ready for the match!"
+        color = "#FFFF66"
+    }
+
+    fun postInitialMessageToChannel(uuid: String, actualPlayersAsString: String, responseUrl: String) {
         val richMessage = RichMessage().apply {
             responseType = "in_channel"
-            attachments = arrayOf(Attachment().apply {
-                text = "<!here> Hello, it's time for a Kicker match :soccer:"
-                color = "#fbf4dd"
-            }, Attachment().apply {
-                text = "Actual players: ${players.joinToString { "<@${it}>" }}"
-                color = "#7CD197"
-            }, ActionableAttachment().apply {
-                title = "Would you like to join?"
-                fallback = "You are unable to join the game"
-                callbackId = uuid
-                color = "#3AA3E3"
-                actions = arrayOf(Action().apply {
-                    name = "plus"
-                    text = ":heavy_plus_sign:"
-                    type = "button"
-                    value = JOIN_MATCH.toString()
-                    style = "primary"
-                }, Action().apply {
-                    name = "minus"
-                    text = ":heavy_minus_sign:"
-                    type = "button"
-                    value = LEAVE_MATCH.toString()
-                }, Action().apply {
-                    name = "cancel"
-                    text = ":x:"
-                    type = "button"
-                    value = CANCEL_MATCH.toString()
-                    style = "danger"
-                    confirm = ConfirmDialog().apply {
-                        title = "Are you sure?"
-                        text = "Do you really want to close the kicker match?"
-                        okText = "Yes"
-                        dismissText = "No"
-                    }
-                })
-            })
+            attachments = arrayOf(helloAttachment(), actualPlayersAttachment(actualPlayersAsString), interactionButtonAttachment(uuid))
         }
         try {
             restTemplate.postForEntity(responseUrl, richMessage, String::class.java)
@@ -77,30 +88,30 @@ class SlackMessageService {
         }
     }
 
-    fun createAddPlayerMessage(originMessage: OriginMessage, actualPlayersAsString: String, matchIsReady: Boolean): RichMessage? {
-        return RichMessage().apply {
+    fun postInitialReadyMatchMessageToChannel(actualPlayersAsString: String, responseUrl: String) {
+        val richMessage = RichMessage().apply {
             responseType = "in_channel"
-            attachments = arrayOf(Attachment().apply {
-                text = "<!here> Hello, it's time for a Kicker match :soccer:"
-                color = "#fbf4dd"
-            }, Attachment().apply {
-                text = "Actual players: $actualPlayersAsString"
-                color = "#7CD197"
-            }, when {
-                matchIsReady -> {
-                    Attachment().apply {
-                        text = "All Players get ready for the match!"
-                        color = "#FFFF66"
-                    }
-                }
-                else -> {
-                    originMessage.attachments[2]
-                }
-            })
+            attachments = arrayOf(helloAttachment(), actualPlayersAttachment(actualPlayersAsString), matchIsReadyAttachment())
+        }
+        try {
+            restTemplate.postForEntity(responseUrl, richMessage, String::class.java)
+        } catch (e: RestClientException) {
+            logger.error("couldn't send message to slack", e)
         }
     }
 
-    fun createMatchTimeoutMessage(): RichMessage? {
+    fun createAddPlayerMessage(originActionAttachment: Attachment, actualPlayersAsString: String, matchIsReady: Boolean): RichMessage {
+        return RichMessage().apply {
+            responseType = "in_channel"
+            attachments = arrayOf(helloAttachment(), actualPlayersAttachment(actualPlayersAsString),
+                    when {
+                        matchIsReady -> matchIsReadyAttachment()
+                        else -> originActionAttachment
+                    })
+        }
+    }
+
+    fun createMatchTimeoutMessage(): RichMessage {
         return RichMessage().apply {
             responseType = "in_channel"
             attachments = arrayOf(
@@ -113,7 +124,7 @@ class SlackMessageService {
         }
     }
 
-    fun createMatchCanceledMessage(): RichMessage? {
+    fun createMatchCanceledMessage(): RichMessage {
         return RichMessage().apply {
             responseType = "in_channel"
             attachments = arrayOf(
