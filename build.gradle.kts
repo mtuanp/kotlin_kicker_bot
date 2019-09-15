@@ -81,3 +81,14 @@ tasks.jacocoTestReport {
         html.destination = file("${buildDir}/jacocoHtml")
     }
 }
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        isFailOnViolation = true
+        rule {
+            limit {
+                minimum = 0.85.toBigDecimal()
+            }
+        }
+    }
+}
