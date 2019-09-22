@@ -44,13 +44,14 @@ class KickerBotSlackService {
             slackMessageService.postInitialMessageToChannel(uuid, actualPlayersAsString, responseUrl)
         } else {
             slackMessageService.postInitialReadyMatchMessageToChannel(actualPlayersAsString, responseUrl)
-            val future = CompletableFuture.runAsync {
+            CompletableFuture.runAsync {
                 players.parallelStream().forEach { playerId ->
                     slackMessageService.postUserGoMessageNotification(teamId, playerId, actualPlayersAsString)
                 }
-            }
-            if (async.not()) {
-                future.get()
+            }.also {
+                if (async.not()) {
+                    it.get()
+                }
             }
         }
 
@@ -67,14 +68,16 @@ class KickerBotSlackService {
             val actualPlayersAsString = actualPlayers.joinToString { "<@${it}>" }
             val returnMessage = slackMessageService.createActiveMatchMessage(originActionableAttachment, actualPlayersAsString, matchIsReady)
             if (matchIsReady) {
-                val future = CompletableFuture.runAsync {
+                CompletableFuture.runAsync {
                     actualPlayers.parallelStream().forEach { playerId ->
                         slackMessageService.postUserGoMessageNotification(teamId, playerId, actualPlayersAsString)
                     }
+                }.also {
+                    if (async.not()) {
+                        it.get()
+                    }
                 }
-                if (async.not()) {
-                    future.get();
-                }
+
             }
             return returnMessage
         }

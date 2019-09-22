@@ -22,6 +22,8 @@ import java.util.concurrent.CompletableFuture
 class KickerBotSlackController {
     val logger: Logger = LoggerFactory.getLogger(KickerBotSlackController::class.java)
 
+    internal var async = true
+
     @Autowired
     lateinit var kickerBotSlackService: KickerBotSlackService
 
@@ -36,6 +38,10 @@ class KickerBotSlackController {
         CompletableFuture.runAsync {
             kickerBotSlackService.startKickerGame(slackCommandRequest.team_id, slackCommandRequest.user_id, slackCommandRequest.text, slackCommandRequest.response_url)
             logger.debug("Game created")
+        }.also {
+            if (async.not()) {
+                it.join()
+            }
         }
         return ""
     }
