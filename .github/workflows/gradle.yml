@@ -19,7 +19,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: javaLib
-        path: build/libs/slack-kicker-app-*.jar
+        path: build/libs/slack-kicker-app-1.0.0.jar
     - name: Upload Report
       uses: actions/upload-artifact@v1
       with:

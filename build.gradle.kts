@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "de.kicker.bot.restapi"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 
