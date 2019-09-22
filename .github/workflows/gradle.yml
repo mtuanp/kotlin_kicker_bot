@@ -15,7 +15,7 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: ./gradlew build jacocoTestCoverageVerification jacocoTestReport
-    - uses: actions/upload-artifact@master
+    - uses: actions/upload-artifact@v1
         with:
           name: jacocoReport
           path: build/jacocoHtml
