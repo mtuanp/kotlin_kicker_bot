@@ -17,29 +17,50 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 
 
+/**
+ * Service for creating slack messages and post it to slack.
+ */
 @Service
 class SlackMessageService {
     internal var logger: Logger = LoggerFactory.getLogger(SlackMessageService::class.java)
 
+    /**
+     * Rest client for accessing slack api.
+     */
     @Autowired
     lateinit var restTemplate: RestTemplate
 
+    /**
+     *  Slack endpoints information.
+     */
     @Autowired
     lateinit var slackApiEndpoints: SlackApiEndpoints
 
+    /**
+     * Slack token service for retrieving the token and save it.
+     */
     @Autowired
     lateinit var slackTokenService: SlackTokenService
 
+    /**
+     * Create a the initial welcome attachment.
+     */
     private fun helloAttachment() = Attachment().apply {
         text = "<!here> Hello, it's time for a Kicker match :soccer:"
         color = "#fbf4dd"
     }
 
+    /**
+     * create the actual player attachment.
+     */
     private fun actualPlayersAttachment(actualPlayersAsString: String) = Attachment().apply {
         text = "Actual players: $actualPlayersAsString"
         color = "#7CD197"
     }
 
+    /**
+     * create the interactive button attachment for join, leave or cancel the match.
+     */
     private fun interactionButtonAttachment(uuid: String) = ActionableAttachment().apply {
         title = "Would you like to join?"
         fallback = "You are unable to join the game"
@@ -71,11 +92,17 @@ class SlackMessageService {
         })
     }
 
+    /**
+     * create the match ready attachment.
+     */
     private fun matchIsReadyAttachment() = Attachment().apply {
         text = "All Players get ready for the match!"
         color = "#FFFF66"
     }
 
+    /**
+     * Create the initial match message and post it in the channel.
+     */
     fun postInitialMessageToChannel(uuid: String, actualPlayersAsString: String, responseUrl: String) {
         val richMessage = RichMessage().apply {
             responseType = "in_channel"
@@ -88,6 +115,9 @@ class SlackMessageService {
         }
     }
 
+    /**
+     * Create the initial match message and post it in the channel. This is a special case, the match is already ready to play.
+     */
     fun postInitialReadyMatchMessageToChannel(actualPlayersAsString: String, responseUrl: String) {
         val richMessage = RichMessage().apply {
             responseType = "in_channel"
@@ -100,7 +130,10 @@ class SlackMessageService {
         }
     }
 
-    fun createAddPlayerMessage(originActionAttachment: Attachment, actualPlayersAsString: String, matchIsReady: Boolean): RichMessage {
+    /**
+     * create a active match message.
+     */
+    fun createActiveMatchMessage(originActionAttachment: Attachment, actualPlayersAsString: String, matchIsReady: Boolean): RichMessage {
         return RichMessage().apply {
             responseType = "in_channel"
             attachments = arrayOf(helloAttachment(), actualPlayersAttachment(actualPlayersAsString),
@@ -111,6 +144,9 @@ class SlackMessageService {
         }
     }
 
+    /**
+     * create a match timeout message.
+     */
     fun createMatchTimeoutMessage(): RichMessage {
         return RichMessage().apply {
             responseType = "in_channel"
@@ -124,6 +160,9 @@ class SlackMessageService {
         }
     }
 
+    /**
+     * create a cancel message
+     */
     fun createMatchCanceledMessage(): RichMessage {
         return RichMessage().apply {
             responseType = "in_channel"
@@ -137,6 +176,9 @@ class SlackMessageService {
         }
     }
 
+    /**
+     * Notifier the user for ready match.
+     */
     fun postUserGoMessageNotification(teamId: String, playerId: String, actualPlayersAsString: String) {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -157,6 +199,9 @@ class SlackMessageService {
         }
     }
 
+    /**
+     * try to receive the access token from slack with the given code and save it in the token store.
+     */
     fun postAuthTokenVerifierAndSave(code: String): Boolean {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED

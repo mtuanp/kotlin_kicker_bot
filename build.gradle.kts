@@ -45,8 +45,8 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
         exclude(group = "junit", module = "junit")
         exclude(module = "mockito-core")
-        exclude(module= "org.assertj")
-        exclude(module= "org.hamcrest")
+        exclude(module = "org.assertj")
+        exclude(module = "org.hamcrest")
     }
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
@@ -87,7 +87,7 @@ tasks.jacocoTestCoverageVerification {
         isFailOnViolation = true
         rule {
             limit {
-                minimum = 0.85.toBigDecimal()
+                minimum = 0.80.toBigDecimal()
             }
         }
     }

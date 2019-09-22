@@ -84,7 +84,7 @@ internal class SlackMessageServiceTest {
     @Test
     fun createAddPlayerMessageTest() {
         val originAttach = Attachment()
-        val message = slackMessageService.createAddPlayerMessage(originAttach, "Player_1", false)
+        val message = slackMessageService.createActiveMatchMessage(originAttach, "Player_1", false)
         assertThat(message).matches { it.responseType == "in_channel" }
         assertThat(message.attachments).hasSize(3)
                 .matches { it[0].text.contains("Hello") }
@@ -95,7 +95,7 @@ internal class SlackMessageServiceTest {
     @Test
     fun createAddPlayerMessageReadyMatchTest() {
         val originAttach = Attachment()
-        val message = slackMessageService.createAddPlayerMessage(originAttach, "Player_1", true)
+        val message = slackMessageService.createActiveMatchMessage(originAttach, "Player_1", true)
         assertThat(message).matches { it.responseType == "in_channel" }
         assertThat(message.attachments).hasSize(3)
                 .matches { it[0].text.contains("Hello") }

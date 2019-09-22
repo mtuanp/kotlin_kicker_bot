@@ -10,8 +10,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class KickerMatchServiceTest {
-    val kickerCache: Cache<String, KickerMatch> = CacheBuilder.newBuilder().maximumSize(10).build();
-    val kickerMatchService = KickerMatchService().apply { kickerMatchCache = kickerCache }
+    private val kickerCache: Cache<String, KickerMatch> = CacheBuilder.newBuilder().maximumSize(10).build();
+    private val kickerMatchService = KickerMatchService().apply { kickerMatchCache = kickerCache }
 
     @BeforeEach
     fun setUp() {

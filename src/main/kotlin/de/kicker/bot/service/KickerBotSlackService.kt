@@ -2,7 +2,7 @@ package de.kicker.bot.service
 
 import de.kicker.bot.api.ErrorCode
 import de.kicker.bot.api.KickerMatch
-import de.kicker.bot.slack.model.OriginMessage
+import de.kicker.bot.slack.model.ActionableAttachment
 import de.kicker.bot.util.SlackUserIdSplitter
 import me.ramswaroop.jbot.core.slack.models.RichMessage
 import org.slf4j.Logger
@@ -27,7 +27,7 @@ class KickerBotSlackService {
     /**
      * Starting a kicker game.
      */
-    fun startKickerGame(teamId: String, userId: String, args: String, responseUrl: String) {
+    fun startKickerGame(teamId: String, userId: String, args: String, responseUrl: String, async: Boolean = true) {
         val uuid = kickerMatchService.createKickerGame(teamId, userId)
         val matchIsReady = when {
             args.isNotEmpty() -> {
@@ -44,10 +44,13 @@ class KickerBotSlackService {
             slackMessageService.postInitialMessageToChannel(uuid, actualPlayersAsString, responseUrl)
         } else {
             slackMessageService.postInitialReadyMatchMessageToChannel(actualPlayersAsString, responseUrl)
-            CompletableFuture.runAsync {
+            val future = CompletableFuture.runAsync {
                 players.parallelStream().forEach { playerId ->
                     slackMessageService.postUserGoMessageNotification(teamId, playerId, actualPlayersAsString)
                 }
+            }
+            if (async.not()) {
+                future.get()
             }
         }
 
@@ -56,18 +59,21 @@ class KickerBotSlackService {
     /**
      * Joining the kicker game.
      */
-    fun joinMatch(uuid: String, teamId: String, userId: String, originMessage: OriginMessage): RichMessage? {
+    fun joinMatch(uuid: String, teamId: String, userId: String, originActionableAttachment: ActionableAttachment, async: Boolean = true): RichMessage? {
         val joinResult = kickerMatchService.addPlayerToMatch(uuid, teamId, userId)
         if (joinResult.success) {
             val matchIsReady = kickerMatchService.matchIsReady(uuid)
             val actualPlayers = kickerMatchService.listMatchPlayers(uuid)
             val actualPlayersAsString = actualPlayers.joinToString { "<@${it}>" }
-            val returnMessage = slackMessageService.createAddPlayerMessage(originMessage.attachments[2], actualPlayersAsString, matchIsReady)
+            val returnMessage = slackMessageService.createActiveMatchMessage(originActionableAttachment, actualPlayersAsString, matchIsReady)
             if (matchIsReady) {
-                CompletableFuture.runAsync {
+                val future = CompletableFuture.runAsync {
                     actualPlayers.parallelStream().forEach { playerId ->
                         slackMessageService.postUserGoMessageNotification(teamId, playerId, actualPlayersAsString)
                     }
+                }
+                if (async.not()) {
+                    future.get();
                 }
             }
             return returnMessage
@@ -84,12 +90,15 @@ class KickerBotSlackService {
         }
     }
 
-    fun leaveMatch(uuid: String, teamId: String, userId: String, originMessage: OriginMessage): RichMessage? {
+    /**
+     * leve the kicker match.
+     */
+    fun leaveMatch(uuid: String, teamId: String, userId: String, originActionableAttachment: ActionableAttachment): RichMessage? {
         val leaveResult = kickerMatchService.removePlayerFromMatch(uuid, teamId, userId)
         if (leaveResult.success) {
             val matchIsReady = kickerMatchService.matchIsReady(uuid)
             val actualPlayersAsString = kickerMatchService.listMatchPlayers(uuid).joinToString { "<@${it}>" }
-            return slackMessageService.createAddPlayerMessage(originMessage.attachments[2], actualPlayersAsString, matchIsReady)
+            return slackMessageService.createActiveMatchMessage(originActionableAttachment, actualPlayersAsString, matchIsReady)
         }
         return when (leaveResult.errorCode) {
             ErrorCode.MATCH_NOT_FOUND -> slackMessageService.createMatchTimeoutMessage()
@@ -102,6 +111,9 @@ class KickerBotSlackService {
         }
     }
 
+    /**
+     * cancel the kicker match
+     */
     fun cancelMatch(uuid: String, teamId: String, userId: String): RichMessage? {
         val cancelResult = kickerMatchService.cancelMatch(uuid, teamId, userId)
         if (cancelResult.success) {
@@ -113,6 +125,9 @@ class KickerBotSlackService {
         }
     }
 
+    /**
+     * receive a code for access token from slack.
+     */
     fun receiveAccessToken(code: String): Boolean {
         return slackMessageService.postAuthTokenVerifierAndSave(code)
     }
