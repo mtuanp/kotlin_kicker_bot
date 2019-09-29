@@ -57,7 +57,7 @@ class KickerMatchService {
     fun cancelMatch(uuid: String, teamId: String, userId: String): Result {
         val kickerMatch = kickerMatchCache.getIfPresent(uuid) ?: return Result.error(ErrorCode.MATCH_NOT_FOUND)
         return if (kickerMatch.teamId == teamId) {
-            if( kickerMatch.hasPlayer(userId)) {
+            if (kickerMatch.hasPlayer(userId)) {
                 kickerMatchCache.invalidate(uuid)
                 Result.success()
             } else {

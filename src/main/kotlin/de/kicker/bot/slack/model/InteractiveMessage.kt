@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import me.ramswaroop.jbot.core.slack.models.Channel
 import me.ramswaroop.jbot.core.slack.models.User
-import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)

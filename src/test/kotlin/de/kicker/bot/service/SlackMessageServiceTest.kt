@@ -163,10 +163,10 @@ internal class SlackMessageServiceTest {
         assertThat(urlSlot.captured).isEqualTo("slack/oauth.access")
         assertThat(messageSlot.captured.headers.contentType).isEqualTo(MediaType.APPLICATION_FORM_URLENCODED)
         assertThat(messageSlot.captured.body).hasSize(4)
-                .matches {it.containsKey("client_id")}
-                .matches {it.containsKey("client_secret")}
-                .matches {it.containsKey("code")}
-                .matches {it.containsKey("single_channel")}
+                .matches { it.containsKey("client_id") }
+                .matches { it.containsKey("client_secret") }
+                .matches { it.containsKey("code") }
+                .matches { it.containsKey("single_channel") }
     }
 
     @Test

@@ -1,7 +1,10 @@
 package de.kicker.bot.service
 
 import de.kicker.bot.api.MatchInteraction.*
-import de.kicker.bot.slack.model.*
+import de.kicker.bot.slack.model.AccessTokenResponse
+import de.kicker.bot.slack.model.Action
+import de.kicker.bot.slack.model.ActionableAttachment
+import de.kicker.bot.slack.model.ConfirmDialog
 import me.ramswaroop.jbot.core.slack.models.Attachment
 import me.ramswaroop.jbot.core.slack.models.RichMessage
 import org.slf4j.Logger
