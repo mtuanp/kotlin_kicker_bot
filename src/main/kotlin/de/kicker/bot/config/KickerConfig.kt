@@ -30,7 +30,7 @@ class KickerConfig {
         logger.info("load dev cache settings")
         return CacheBuilder.newBuilder()
                 .maximumSize(10)
-                .expireAfterAccess(30, TimeUnit.SECONDS)
+                .expireAfterAccess(30, TimeUnit.MINUTES)
                 .build();
     }
 

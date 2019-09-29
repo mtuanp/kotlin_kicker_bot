@@ -2,6 +2,8 @@ package de.kicker.bot.service
 
 import de.kicker.bot.slack.model.AccessTokenResponse
 import de.kicker.bot.slack.model.ActionableAttachment
+import de.kicker.bot.slack.model.RichMessageTimestamp
+import de.kicker.bot.slack.model.SlackResponse
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -210,5 +212,48 @@ internal class SlackMessageServiceTest {
         verify(exactly = 1) { mockLogger.error("couldn't send message to slack", any<RestClientException>()) }
         verify(exactly = 0) { mockSlackTokenService.saveToken(any(), any()) }
         assertThat(result).isFalse()
+    }
+
+
+    @Test
+    fun deleteMessageTest() {
+        val messageSlot = slot<HttpEntity<RichMessageTimestamp>>()
+        val urlSlot = slot<String>()
+        val teamIdSlot = slot<String>()
+        every { mockSlackTokenService.getToken(capture(teamIdSlot)) }.returns("Token")
+        every { mockRestTemplate.postForEntity(capture(urlSlot), capture(messageSlot), SlackResponse::class.java) }.returns(ResponseEntity(SlackResponse().apply { ok = true }, HttpStatus.OK))
+        slackMessageService.deleteMessage("TeamR", "ChannelX", "1234")
+
+        assertThat(teamIdSlot.captured).isEqualTo("TeamR")
+        assertThat(urlSlot.captured).isEqualTo("slack/chat.delete")
+        assertThat(messageSlot.captured.headers.contentType).isEqualTo(MediaType.APPLICATION_JSON)
+        assertThat(messageSlot.captured.headers["Authorization"]!!.first()).isEqualTo("Bearer Token")
+        assertThat(messageSlot.captured.body!!.channel).isEqualTo("ChannelX")
+        assertThat(messageSlot.captured.body!!.ts).isEqualTo("1234")
+        verify(exactly = 0) { mockLogger.error(any()) }
+    }
+
+    @Test
+    fun deleteMessageTestFalse() {
+        val messageSlot = slot<HttpEntity<RichMessageTimestamp>>()
+        val urlSlot = slot<String>()
+        val teamIdSlot = slot<String>()
+        every { mockSlackTokenService.getToken(capture(teamIdSlot)) }.returns("Token")
+        every { mockRestTemplate.postForEntity(capture(urlSlot), capture(messageSlot), SlackResponse::class.java) }.returns(ResponseEntity(HttpStatus.OK))
+        slackMessageService.deleteMessage("TeamR", "ChannelX", "1234")
+        assertThat(teamIdSlot.captured).isEqualTo("TeamR")
+        assertThat(urlSlot.captured).isEqualTo("slack/chat.delete")
+        assertThat(messageSlot.captured.headers.contentType).isEqualTo(MediaType.APPLICATION_JSON)
+        assertThat(messageSlot.captured.headers["Authorization"]!!.first()).isEqualTo("Bearer Token")
+        assertThat(messageSlot.captured.body!!.channel).isEqualTo("ChannelX")
+        assertThat(messageSlot.captured.body!!.ts).isEqualTo("1234")
+        verify(exactly = 1) { mockLogger.error(any()) }
+    }
+
+    @Test
+    fun deleteMessageExceptionTest() {
+        every { mockRestTemplate.postForEntity(any<String>(), any<HttpEntity<RichMessageTimestamp>>(), SlackResponse::class.java) }.throws(RestClientException("Testing"))
+        slackMessageService.deleteMessage("TeamR", "ChannelId", "123")
+        verify(exactly = 1) { mockLogger.error("couldn't send message to slack", any<RestClientException>()) }
     }
 }

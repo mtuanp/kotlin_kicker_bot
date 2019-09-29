@@ -7,6 +7,7 @@ import de.kicker.bot.slack.model.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import me.ramswaroop.jbot.core.slack.models.Channel
 import me.ramswaroop.jbot.core.slack.models.User
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -50,6 +51,8 @@ internal class KickerBotSlackControllerTest {
         val givenTeamId = "TeamA"
         val givenUser = "User1"
         val givenAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         every { objectMapperMock.readValue(payload, InteractiveMessage::class.java) } returns InteractiveMessage().apply {
             callbackId = givenCallbackId
             team = Team().apply { id = givenTeamId }
@@ -58,11 +61,13 @@ internal class KickerBotSlackControllerTest {
                 attachments = arrayOf(ActionableAttachment(), ActionableAttachment(), givenAttachment)
             }
             actions = arrayOf(Action().apply { value = MatchInteraction.JOIN_MATCH.toString() })
+            channel = Channel().apply { id = givenChannelId }
+            messageTs = givenMessageTs
         }
         val returnValue = kickerBotSlackController.callbackKickerGame(payload)
 
         assertThat(returnValue).isNotNull
-        verify(exactly = 1) { kickerBotSlackServiceMock.joinMatch(givenCallbackId, givenTeamId, givenUser, givenAttachment) }
+        verify(exactly = 1) { kickerBotSlackServiceMock.joinMatch(givenCallbackId, givenTeamId, givenUser, givenChannelId, givenMessageTs, givenAttachment) }
         verify(exactly = 0) { kickerBotSlackServiceMock.leaveMatch(givenCallbackId, givenTeamId, givenUser, givenAttachment) }
         verify(exactly = 0) { kickerBotSlackServiceMock.cancelMatch(givenCallbackId, givenTeamId, givenUser) }
     }
@@ -74,6 +79,8 @@ internal class KickerBotSlackControllerTest {
         val givenTeamId = "TeamA"
         val givenUser = "User1"
         val givenAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         every { objectMapperMock.readValue(payload, InteractiveMessage::class.java) } returns InteractiveMessage().apply {
             callbackId = givenCallbackId
             team = Team().apply { id = givenTeamId }
@@ -82,11 +89,13 @@ internal class KickerBotSlackControllerTest {
                 attachments = arrayOf(ActionableAttachment(), ActionableAttachment(), givenAttachment)
             }
             actions = arrayOf(Action().apply { value = MatchInteraction.LEAVE_MATCH.toString() })
+            channel = Channel().apply { id = givenChannelId }
+            messageTs = givenMessageTs
         }
         val returnValue = kickerBotSlackController.callbackKickerGame(payload)
 
         assertThat(returnValue).isNotNull
-        verify(exactly = 0) { kickerBotSlackServiceMock.joinMatch(givenCallbackId, givenTeamId, givenUser, givenAttachment) }
+        verify(exactly = 0) { kickerBotSlackServiceMock.joinMatch(givenCallbackId, givenTeamId, givenUser, givenChannelId, givenMessageTs, givenAttachment) }
         verify(exactly = 1) { kickerBotSlackServiceMock.leaveMatch(givenCallbackId, givenTeamId, givenUser, givenAttachment) }
         verify(exactly = 0) { kickerBotSlackServiceMock.cancelMatch(givenCallbackId, givenTeamId, givenUser) }
     }
@@ -98,6 +107,8 @@ internal class KickerBotSlackControllerTest {
         val givenTeamId = "TeamA"
         val givenUser = "User1"
         val givenAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         every { objectMapperMock.readValue(payload, InteractiveMessage::class.java) } returns InteractiveMessage().apply {
             callbackId = givenCallbackId
             team = Team().apply { id = givenTeamId }
@@ -106,11 +117,13 @@ internal class KickerBotSlackControllerTest {
                 attachments = arrayOf(ActionableAttachment(), ActionableAttachment(), givenAttachment)
             }
             actions = arrayOf(Action().apply { value = MatchInteraction.CANCEL_MATCH.toString() })
+            channel = Channel().apply { id = givenChannelId }
+            messageTs = givenMessageTs
         }
         val returnValue = kickerBotSlackController.callbackKickerGame(payload)
 
         assertThat(returnValue).isNotNull
-        verify(exactly = 0) { kickerBotSlackServiceMock.joinMatch(givenCallbackId, givenTeamId, givenUser, givenAttachment) }
+        verify(exactly = 0) { kickerBotSlackServiceMock.joinMatch(givenCallbackId, givenTeamId, givenUser, givenChannelId, givenMessageTs, givenAttachment) }
         verify(exactly = 0) { kickerBotSlackServiceMock.leaveMatch(givenCallbackId, givenTeamId, givenUser, givenAttachment) }
         verify(exactly = 1) { kickerBotSlackServiceMock.cancelMatch(givenCallbackId, givenTeamId, givenUser) }
     }

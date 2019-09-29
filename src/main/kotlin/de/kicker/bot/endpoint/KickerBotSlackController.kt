@@ -56,9 +56,12 @@ class KickerBotSlackController {
             val uuid = interactiveMessage.callbackId
             val teamId = interactiveMessage.team.id
             val userId = interactiveMessage.user.id
+            val channelId = interactiveMessage.channel.id
+            val messageTs = interactiveMessage.messageTs
+            val originAttachment = interactiveMessage.originalMessage.attachments[2]
             return when (interactiveMessage.actions.map(Action::value).map { MatchInteraction.valueOf(it) }.firstOrNull()) {
-                MatchInteraction.JOIN_MATCH -> kickerBotSlackService.joinMatch(uuid, teamId, userId, interactiveMessage.originalMessage.attachments[2])
-                MatchInteraction.LEAVE_MATCH -> kickerBotSlackService.leaveMatch(uuid, teamId, userId, interactiveMessage.originalMessage.attachments[2])
+                MatchInteraction.JOIN_MATCH -> kickerBotSlackService.joinMatch(uuid, teamId, userId, channelId, messageTs, originAttachment)
+                MatchInteraction.LEAVE_MATCH -> kickerBotSlackService.leaveMatch(uuid, teamId, userId, originAttachment)
                 MatchInteraction.CANCEL_MATCH -> kickerBotSlackService.cancelMatch(uuid, teamId, userId)
                 else -> null
             }

@@ -2,16 +2,11 @@ package de.kicker.bot.slack.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonProperty
+import me.ramswaroop.jbot.core.slack.models.RichMessage
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-class AccessTokenResponse : SlackResponse() {
+class RichMessageTimestamp : RichMessage() {
 
-    @JsonProperty("access_token")
-    var accessToken: String = ""
-
-    @JsonProperty("team_id")
-    var teamId: String = ""
-
+    var ts: String = ""
 }

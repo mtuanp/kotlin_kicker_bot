@@ -21,7 +21,14 @@ class SlackApiEndpoints {
     }
 
     inner class ChatApi {
-        fun postMessage() = "$slackApi/chat.postMessage"
+
+        private val chat = "chat"
+
+        fun postMessage() = "$slackApi/$chat.postMessage"
+
+        fun deleteMessage() = "$slackApi/$chat.delete"
+
+        fun postEphemeral() = "$slackApi/$chat.postEphemeral"
     }
 
     inner class AuthApi {

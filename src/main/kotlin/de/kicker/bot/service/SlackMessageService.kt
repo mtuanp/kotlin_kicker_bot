@@ -1,10 +1,7 @@
 package de.kicker.bot.service
 
 import de.kicker.bot.api.MatchInteraction.*
-import de.kicker.bot.slack.model.AccessTokenResponse
-import de.kicker.bot.slack.model.Action
-import de.kicker.bot.slack.model.ActionableAttachment
-import de.kicker.bot.slack.model.ConfirmDialog
+import de.kicker.bot.slack.model.*
 import me.ramswaroop.jbot.core.slack.models.Attachment
 import me.ramswaroop.jbot.core.slack.models.RichMessage
 import org.slf4j.Logger
@@ -12,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
@@ -228,5 +226,30 @@ class SlackMessageService {
         return false
     }
 
-
+    /**
+     * Delete the a message on chanel with given timestamp.
+     * returns true if successful
+     */
+    fun deleteMessage(teamId: String, channelId: String, timestamp: String): Boolean {
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val token = slackTokenService.getToken(teamId)
+        headers.setBearerAuth(token)
+        val postMessage = RichMessageTimestamp().apply {
+            ts = timestamp
+            channel = channelId
+        }
+        try {
+            val request = HttpEntity(postMessage, headers)
+            val slackResponse = restTemplate.postForEntity(slackApiEndpoints.chat().deleteMessage(), request, SlackResponse::class.java)
+            if (slackResponse.statusCode == HttpStatus.OK && slackResponse.body?.ok == true) {
+                return true
+            } else {
+                logger.error("couldn't delete message Http-Status | ${slackResponse.statusCode} | ${slackResponse.body}")
+            }
+        } catch (e: RestClientException) {
+            logger.error("couldn't send message to slack", e)
+        }
+        return false
+    }
 }

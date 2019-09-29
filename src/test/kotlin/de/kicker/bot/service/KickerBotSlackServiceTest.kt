@@ -109,8 +109,10 @@ internal class KickerBotSlackServiceTest {
         val userId = "User1"
         val userId2 = "User2"
         val originAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         myKickerMatchCache.put(uuid, KickerMatch(teamId).apply { addPlayer(userId) })
-        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId2, originAttachment)
+        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId2, givenChannelId, givenMessageTs, originAttachment)
 
         assertThat(returnMessage).isNotNull
         verify(exactly = 1) { kickerMatchServiceSpy.addPlayerToMatch(uuid, teamId, userId2) }
@@ -129,11 +131,13 @@ internal class KickerBotSlackServiceTest {
         val userId2 = "User2"
         val userId3 = "User3"
         val originAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         myKickerMatchCache.put(uuid, KickerMatch(teamId).apply {
             addPlayer(userId)
             addPlayer(userId2)
         })
-        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId3, originAttachment)
+        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId3, givenChannelId, givenMessageTs, originAttachment)
 
         assertThat(returnMessage).isNotNull
         verify(exactly = 1) { kickerMatchServiceSpy.addPlayerToMatch(uuid, teamId, userId3) }
@@ -153,19 +157,22 @@ internal class KickerBotSlackServiceTest {
         val userId3 = "User3"
         val userId4 = "User4"
         val originAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         myKickerMatchCache.put(uuid, KickerMatch(teamId).apply {
             addPlayer(userId)
             addPlayer(userId2)
             addPlayer(userId3)
         })
-        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId4, originAttachment, false)
+        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId4, givenChannelId, givenMessageTs, originAttachment, false)
 
-        assertThat(returnMessage).isNotNull
+        assertThat(returnMessage).isNull()
         verify(exactly = 1) { kickerMatchServiceSpy.addPlayerToMatch(uuid, teamId, userId4) }
         verify(exactly = 1) { kickerMatchServiceSpy.matchIsReady(uuid) }
         verify(exactly = 1) { kickerMatchServiceSpy.listMatchPlayers(uuid) }
         verify(exactly = 1) { slackMessageServiceMock.createActiveMatchMessage(originAttachment, any(), any()) }
         verify(exactly = 4) { slackMessageServiceMock.postUserGoMessageNotification(teamId, any(), any()) }
+        verify(exactly = 1) { slackMessageServiceMock.deleteMessage(teamId, givenChannelId, givenMessageTs) }
         verify(exactly = 0) { slackMessageServiceMock.createMatchTimeoutMessage() }
     }
 
@@ -176,10 +183,12 @@ internal class KickerBotSlackServiceTest {
         val userId = "User1"
         val userId2 = "User2"
         val originAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         myKickerMatchCache.put("UUID2", KickerMatch(teamId).apply {
             addPlayer(userId)
         })
-        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId2, originAttachment, false)
+        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId2, givenChannelId, givenMessageTs, originAttachment, false)
 
         assertThat(returnMessage).isNotNull
         verify(exactly = 1) { kickerMatchServiceSpy.addPlayerToMatch(uuid, teamId, userId2) }
@@ -193,10 +202,12 @@ internal class KickerBotSlackServiceTest {
         val userId = "User1"
         val userId2 = "User2"
         val originAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         myKickerMatchCache.put(uuid, KickerMatch("TeamB").apply {
             addPlayer(userId)
         })
-        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId2, originAttachment, false)
+        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId2, givenChannelId, givenMessageTs, originAttachment, false)
 
         assertThat(returnMessage).isNull()
         verify(exactly = 1) { kickerMatchServiceSpy.addPlayerToMatch(uuid, teamId, userId2) }
@@ -208,10 +219,12 @@ internal class KickerBotSlackServiceTest {
         val teamId = "TeamA"
         val userId = "User1"
         val originAttachment = ActionableAttachment()
+        val givenChannelId = "ChannelX"
+        val givenMessageTs = "1234545678789"
         myKickerMatchCache.put(uuid, KickerMatch(teamId).apply {
             addPlayer(userId)
         })
-        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId, originAttachment, false)
+        val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId, givenChannelId, givenMessageTs, originAttachment, false)
 
         assertThat(returnMessage).isNull()
         verify(exactly = 1) { kickerMatchServiceSpy.addPlayerToMatch(uuid, teamId, userId) }

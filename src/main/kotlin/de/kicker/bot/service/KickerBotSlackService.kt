@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 /**
  * Business logic service
@@ -60,24 +61,26 @@ class KickerBotSlackService {
     /**
      * Joining the kicker game.
      */
-    fun joinMatch(uuid: String, teamId: String, userId: String, originActionableAttachment: ActionableAttachment, async: Boolean = true): RichMessage? {
+    fun joinMatch(uuid: String, teamId: String, userId: String, channelId: String, messageTs: String, originAttachment: ActionableAttachment, async: Boolean = true): RichMessage? {
         val joinResult = kickerMatchService.addPlayerToMatch(uuid, teamId, userId)
         if (joinResult.success) {
             val matchIsReady = kickerMatchService.matchIsReady(uuid)
             val actualPlayers = kickerMatchService.listMatchPlayers(uuid)
             val actualPlayersAsString = actualPlayers.joinToString { "<@${it}>" }
-            val returnMessage = slackMessageService.createActiveMatchMessage(originActionableAttachment, actualPlayersAsString, matchIsReady)
+            val returnMessage = slackMessageService.createActiveMatchMessage(originAttachment, actualPlayersAsString, matchIsReady)
             if (matchIsReady) {
                 CompletableFuture.runAsync {
                     actualPlayers.parallelStream().forEach { playerId ->
                         slackMessageService.postUserGoMessageNotification(teamId, playerId, actualPlayersAsString)
                     }
+                    if (async) TimeUnit.MINUTES.sleep(2)
+                    slackMessageService.deleteMessage(teamId, channelId, messageTs)
                 }.also {
                     if (async.not()) {
                         it.get()
                     }
                 }
-
+                return null
             }
             return returnMessage
         }
