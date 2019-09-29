@@ -1,1 +1,1 @@
-# kotling_slack_kicker
+# kotlin_slack_kicker
