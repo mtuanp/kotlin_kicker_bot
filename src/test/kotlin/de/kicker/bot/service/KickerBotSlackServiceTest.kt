@@ -166,7 +166,7 @@ internal class KickerBotSlackServiceTest {
         })
         val returnMessage = kickerBotSlackService.joinMatch(uuid, teamId, userId4, givenChannelId, givenMessageTs, originAttachment, false)
 
-        assertThat(returnMessage).isNull()
+        assertThat(returnMessage).isNotNull
         verify(exactly = 1) { kickerMatchServiceSpy.addPlayerToMatch(uuid, teamId, userId4) }
         verify(exactly = 1) { kickerMatchServiceSpy.matchIsReady(uuid) }
         verify(exactly = 1) { kickerMatchServiceSpy.listMatchPlayers(uuid) }

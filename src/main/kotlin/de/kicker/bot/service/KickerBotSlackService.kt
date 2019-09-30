@@ -80,7 +80,6 @@ class KickerBotSlackService {
                         it.get()
                     }
                 }
-                return null
             }
             return returnMessage
         }
